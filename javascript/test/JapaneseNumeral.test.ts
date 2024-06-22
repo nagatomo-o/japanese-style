@@ -1,0 +1,91 @@
+import { JapaneseNumeral } from '../src/JapaneseNumeral.js';
+
+describe('format test', () => {
+    test("〇", () => expect(JapaneseNumeral.format(0)).toBe("〇"));
+    test("一", () => expect(JapaneseNumeral.format(1)).toBe("一"));
+    test("二", () => expect(JapaneseNumeral.format(2)).toBe("二"));
+    test("三", () => expect(JapaneseNumeral.format(3)).toBe("三"));
+    test("四", () => expect(JapaneseNumeral.format(4)).toBe("四"));
+    test("五", () => expect(JapaneseNumeral.format(5)).toBe("五"));
+    test("六", () => expect(JapaneseNumeral.format(6)).toBe("六"));
+    test("七", () => expect(JapaneseNumeral.format(7)).toBe("七"));
+    test("八", () => expect(JapaneseNumeral.format(8)).toBe("八"));
+    test("九", () => expect(JapaneseNumeral.format(9)).toBe("九"));
+    test("十", () => expect(JapaneseNumeral.format(10)).toBe("十"));
+    test("十一", () => expect(JapaneseNumeral.format(11)).toBe("十一"));
+    test("二十", () => expect(JapaneseNumeral.format(20)).toBe("二十"));
+    test("九十九", () => expect(JapaneseNumeral.format(99)).toBe("九十九"));
+    test("百", () => expect(JapaneseNumeral.format(100)).toBe("百"));
+    test("百一", () => expect(JapaneseNumeral.format(101)).toBe("百一"));
+    test("九百九十九", () => expect(JapaneseNumeral.format(999)).toBe("九百九十九"));
+    test("千", () => expect(JapaneseNumeral.format(1000)).toBe("千"));
+    test("千一", () => expect(JapaneseNumeral.format(1001)).toBe("千一"));
+    test("九千九百九十九", () => expect(JapaneseNumeral.format(9999)).toBe("九千九百九十九"));
+    test("一万", () => expect(JapaneseNumeral.format(10000)).toBe("一万"));
+    test("一万一", () => expect(JapaneseNumeral.format(10001)).toBe("一万一"));
+    test("九万九千九百九十九", () => expect(JapaneseNumeral.format(99999)).toBe("九万九千九百九十九"));
+    test("十万", () => expect(JapaneseNumeral.format(100000)).toBe("十万"));
+    test("十万一", () => expect(JapaneseNumeral.format(100001)).toBe("十万一"));
+    test("九十九万九千九百九十九", () => expect(JapaneseNumeral.format(999999)).toBe("九十九万九千九百九十九"));
+    test("百万", () => expect(JapaneseNumeral.format(1000000)).toBe("百万"));
+    test("百万一", () => expect(JapaneseNumeral.format(1000001)).toBe("百万一"));
+    test("九百九十九万九千九百九十九", () => expect(JapaneseNumeral.format(9999999)).toBe("九百九十九万九千九百九十九"));
+    test("千万", () => expect(JapaneseNumeral.format(10000000)).toBe("千万"));
+    test("千万一", () => expect(JapaneseNumeral.format(10000001)).toBe("千万一"));
+    test("九千九百九十九万九千九百九十九", () => expect(JapaneseNumeral.format(99999999)).toBe("九千九百九十九万九千九百九十九"));
+    test("一億", () => expect(JapaneseNumeral.format(100000000)).toBe("一億"));
+    test("一億一", () => expect(JapaneseNumeral.format(100000001)).toBe("一億一"));
+    test("九千九百九十九億九千九百九十九万九千九百九十九", () => expect(JapaneseNumeral.format(999999999999)).toBe("九千九百九十九億九千九百九十九万九千九百九十九"));
+    test("一兆", () => expect(JapaneseNumeral.format(1000000000000)).toBe("一兆"));
+    test("一兆一", () => expect(JapaneseNumeral.format(1000000000001)).toBe("一兆一"));
+    test("七千八百九十一億二千三百四十五万六千七百八十九", () => expect(JapaneseNumeral.format(789123456789)).toBe("七千八百九十一億二千三百四十五万六千七百八十九"));
+});
+
+describe('format error test', () => {
+    test("minus", () => expect(JapaneseNumeral.format(-1)).toThrow(new Error("-1 is minus.")));
+});
+
+describe('parse test', () => {
+    test("0", () => expect(JapaneseNumeral.parse("〇")).toBe(0));
+    test("1", () => expect(JapaneseNumeral.parse("一")).toBe(1));
+    test("2", () => expect(JapaneseNumeral.parse("二")).toBe(2));
+    test("3", () => expect(JapaneseNumeral.parse("三")).toBe(3));
+    test("4", () => expect(JapaneseNumeral.parse("四")).toBe(4));
+    test("5", () => expect(JapaneseNumeral.parse("五")).toBe(5));
+    test("6", () => expect(JapaneseNumeral.parse("六")).toBe(6));
+    test("7", () => expect(JapaneseNumeral.parse("七")).toBe(7));
+    test("8", () => expect(JapaneseNumeral.parse("八")).toBe(8));
+    test("9", () => expect(JapaneseNumeral.parse("九")).toBe(9));
+    test("10", () => expect(JapaneseNumeral.parse("十")).toBe(10));
+    test("11", () => expect(JapaneseNumeral.parse("十一")).toBe(11));
+    test("20", () => expect(JapaneseNumeral.parse("二十")).toBe(20));
+    test("99", () => expect(JapaneseNumeral.parse("九十九")).toBe(99));
+    test("100", () => expect(JapaneseNumeral.parse("百")).toBe(100));
+    test("101", () => expect(JapaneseNumeral.parse("百一")).toBe(101));
+    test("999", () => expect(JapaneseNumeral.parse("九百九十九")).toBe(999));
+    test("1000", () => expect(JapaneseNumeral.parse("千")).toBe(1000));
+    test("1001", () => expect(JapaneseNumeral.parse("千一")).toBe(1001));
+    test("9999", () => expect(JapaneseNumeral.parse("九千九百九十九")).toBe(9999));
+    test("10000", () => expect(JapaneseNumeral.parse("一万")).toBe(10000));
+    test("10001", () => expect(JapaneseNumeral.parse("一万一")).toBe(10001));
+    test("99999", () => expect(JapaneseNumeral.parse("九万九千九百九十九")).toBe(99999));
+    test("100000", () => expect(JapaneseNumeral.parse("十万")).toBe(100000));
+    test("100001", () => expect(JapaneseNumeral.parse("十万一")).toBe(100001));
+    test("999999", () => expect(JapaneseNumeral.parse("九十九万九千九百九十九")).toBe(999999));
+    test("1000000", () => expect(JapaneseNumeral.parse("百万")).toBe(1000000));
+    test("1000001", () => expect(JapaneseNumeral.parse("百万一")).toBe(1000001));
+    test("9999999", () => expect(JapaneseNumeral.parse("九百九十九万九千九百九十九")).toBe(9999999));
+    test("10000000", () => expect(JapaneseNumeral.parse("千万")).toBe(10000000));
+    test("10000001", () => expect(JapaneseNumeral.parse("千万一")).toBe(10000001));
+    test("99999999", () => expect(JapaneseNumeral.parse("九千九百九十九万九千九百九十九")).toBe(99999999));
+    test("100000000", () => expect(JapaneseNumeral.parse("一億")).toBe(100000000));
+    test("100000001", () => expect(JapaneseNumeral.parse("一億一")).toBe(100000001));
+    test("789123456789", () => expect(JapaneseNumeral.parse("七千八百九十一億二千三百四十五万六千七百八十九")).toBe(789123456789));
+    test("1000000000000", () => expect(JapaneseNumeral.parse("一兆")).toBe(1000000000000));
+    test("1000000000001", () => expect(JapaneseNumeral.parse("一兆一")).toBe(1000000000001));
+});
+
+describe('parse error test', () => {
+    test("empty", () => expect(JapaneseNumeral.parse("")).toThrow(new Error("string is empty.")));
+    test("ー", () => expect(JapaneseNumeral.parse("十ー")).toThrow(new Error("invalid character: ー")));
+});
