@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
-namespace JapaneseStyle;
+namespace NagatomoO\JapaneseStyle;
 
 use ValueError;
-use JapaneseStyle\JapaneseNumeralException;
+use NagatomoO\JapaneseStyle\JapaneseNumeralException;
 
 /**
  * 漢数字

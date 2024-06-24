@@ -1,13 +1,35 @@
 import { Period } from "./Period";
 
-export class Holiday {
+export class Calendar {
+    // 振替休日の施行日
+    static ImplementationDateOfSubstituteHoliday = new Date("1973-04-12 00:00:00.000000+09:00");
+    // 国民の休日の施行日
+    static ImplementationDateOfAdditionalHoliday = new Date("1985-12-27 00:00:00.000000+09:00");
 
-    static getConst(date: Date): string | null {
+    /**
+     * 春分の日
+     * @param int $year 年
+     * @return int 日
+     */
+    static getVernalEquinoxDay(year: number): number {
+        return Math.floor((0.242385544201545 * year) - (Math.floor(year / 4) - Math.floor(year / 100) + Math.floor(year / 400)) + 20.9150411785049);
+    }
+
+    /**
+     * 秋分の日
+     * @param int $year 年
+     * @return int 日
+     */
+    static getAutumnalEquinoxDay(year: number): number {
+        return Math.floor((0.242035499172366 * year) - (Math.floor(year / 4) - Math.floor(year / 100) + Math.floor(year / 400)) + 24.0227494548387);
+    }
+
+    static getConstHoliday(date: Date): string | null {
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
         const dayOfMonth = date.getDate();
         const dayOfWeek = date.getDay();
-        const weekOfMonth = Math.floor((dayOfMonth - 1) / 7);
+        const weekOfMonth = Math.floor((dayOfMonth - 1) / 7) + 1;
 
         if (year > 1948 && month == 1 && dayOfMonth == 1) {
             return '元日';
@@ -17,7 +39,7 @@ export class Holiday {
             || year >= 2000 && month == 1 && weekOfMonth == 2 && dayOfWeek == 1) {
             return '成人の日';
 
-        } else if (year > 1948 && month == 2 && dayOfMonth == Math.floor(20.69115 + 0.2421904 * (year - 2000) - Math.floor((year - 2000) / 4))) {
+        } else if (year > 1948 && month == 3 && dayOfMonth == Calendar.getVernalEquinoxDay(year)) {
             return '春分の日';
 
         } else if (year > 1948 && month == 4 && dayOfMonth == 29) {
@@ -35,7 +57,7 @@ export class Holiday {
         } else if (year > 1948 && month == 5 && dayOfMonth == 5) {
             return 'こどもの日';
 
-        } else if (year >= 1948 && month == 8 && dayOfMonth == Math.floor(23.09 + 0.2421904 * (year - 2000) - Math.floor((year - 2000) / 4))) {
+        } else if (year >= 1948 && month == 9 && dayOfMonth == Calendar.getAutumnalEquinoxDay(year)) {
             return '秋分の日';
 
         } else if (year >= 1948 && month == 11 && dayOfMonth == 3) {
@@ -45,7 +67,8 @@ export class Holiday {
             return '勤労感謝の日';
 
         } else if (year == 1959 && month == 4 && dayOfMonth == 10) {
-            return '皇太子・明仁親王の結婚の儀';
+            // 皇太子・明仁親王の結婚の儀
+            return '結婚の儀';
 
         } else if (year > 1966 && month == 2 && dayOfMonth == 11) {
             return '建国記念の日';
@@ -66,7 +89,8 @@ export class Holiday {
             return year >= 2020 ? 'スポーツの日' : '体育の日';
 
         } else if (year == 1989 && month == 2 && dayOfMonth == 24) {
-            return '昭和天皇の大喪の礼';
+            // 昭和天皇の大喪の礼
+            return '大喪の礼';
 
         } else if (year >= 1989 && year < 2019 && month == 12 && dayOfMonth == 23) {
             return '天皇誕生日';
@@ -75,7 +99,8 @@ export class Holiday {
             return '即位礼正殿の儀';
 
         } else if (year == 1993 && month == 6 && dayOfMonth == 9) {
-            return '皇太子・徳仁親王の結婚の儀';
+            // 皇太子・徳仁親王の結婚の儀
+            return '結婚の儀';
 
         } else if (year >= 1996 && year < 2003 && month == 7 && dayOfMonth == 20
             // 2003年ハッピーマンデー制度により月曜日固定
@@ -112,42 +137,42 @@ export class Holiday {
         return null;
     }
 
-    static isConst(date: Date): boolean {
-        return null != Holiday.getConst(date);
+    static isConstHoliday(date: Date): boolean {
+        return null != Calendar.getConstHoliday(date);
     }
 
     /**
      * 
-     * @param date Date
-     * @returns holyday name
+     * @param Date date
+     * @returns string holyday name
      */
-    static get(date: Date): string | null {
-        const year = date.getFullYear();
-        // 祝日
-        const constHoliday = Holiday.getConst(date);
+    static getHoliday(date: Date): string | null {
+        // 通常の祝日
+        const constHoliday = Calendar.getConstHoliday(date);
         if (null != constHoliday) {
             return constHoliday;
         }
         const yesterday = Period.ofDays(-1);
         const tomorrow = Period.ofDays(1);
         // 振替休日
-        if (year >= 1973) {
+        if (date >= Calendar.ImplementationDateOfSubstituteHoliday) {
             let testDate: Date = new Date(date);
             // 次の日
             testDate = yesterday.addTo(testDate);
-            while (Holiday.isConst(testDate)) {
+            while (Calendar.isConstHoliday(testDate)) {
                 // 日曜日の場合
                 if (testDate.getDay() == 0) {
-                    return "振替休日"
+                    return "振替休日";
                 }
                 testDate = yesterday.addTo(testDate);
             }
         }
         // 国民の休日 : 前後が祝日である平日
-        if (year >= 1986) {
-            if (Holiday.isConst(yesterday.addTo(date)) &&
-                Holiday.isConst(tomorrow.addTo(date)) &&
+        if (date >= Calendar.ImplementationDateOfAdditionalHoliday) {
+            if (Calendar.isConstHoliday(yesterday.addTo(date)) &&
+                Calendar.isConstHoliday(tomorrow.addTo(date)) &&
                 date.getDay() != 0) {
+
                 return "国民の休日";
             }
         }

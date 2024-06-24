@@ -78,7 +78,7 @@ export class Gengo {
      * @returns {Gengo|null} 判定結果
      */
     static fromISODate(year: number, month: number, dayOfMonth: number): Gengo {
-        return Gengo.fromDate(new Date(year, month - 1, dayOfMonth));
+        return Gengo.fromDate(new Date(year, month - 1, dayOfMonth, 0, 0, 0, 0));
     }
 
     /**

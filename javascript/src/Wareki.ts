@@ -77,6 +77,9 @@ export class Wareki {
      * @returns {boolean} 判定結果
      */
     static isValid(gengo: Gengo, nen: number): boolean {
+        if (nen < 1) {
+            return false;
+        }
         const gengoList: Gengo[] = Gengo.list();
         for (let idx: number = 0; idx < gengoList.length; idx++) {
             if (!gengoList[idx].equals(gengo)) {

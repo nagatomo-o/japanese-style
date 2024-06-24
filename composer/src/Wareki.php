@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
-namespace JapaneseStyle;
+namespace NagatomoO\JapaneseStyle;
 
-use JapaneseStyle\Gengo;
 use DateTime;
 use Error;
 use DateTimeInterface;
+use NagatomoO\JapaneseStyle\Gengo;
 
 /**
  * 和暦
@@ -28,7 +28,7 @@ class Wareki {
         }
         $this->gengo = $gengo;
         $this->nen = $nen;
-        $this->year = static::toYear($gengo, $nen);
+        $this->year = self::toYear($gengo, $nen);
     }
 
     /**
@@ -50,7 +50,7 @@ class Wareki {
      * @param Wareki $other
      * @return bool 判定結果
      */
-    function equals(Wareki $other): bool {
+    function equals(?Wareki $other): bool {
         return $this === $other || !is_null($other) && $this->gengo->equals($other->gengo) && $this->nen == $other->nen;
     }
 
@@ -59,7 +59,7 @@ class Wareki {
      * @return Wareki 和暦
      */
     static function now(): Wareki {
-        return Wareki::fromDate(new DateTime());
+        return self::fromDate(new DateTime());
     }
 
     /**
@@ -84,6 +84,9 @@ class Wareki {
      * @return bool 判定結果
      */
     static function isValid(Gengo $gengo, int $nen): bool {
+        if ($nen < 1) {
+            return false;
+        }
         $gengoList = Gengo::list();
         foreach ($gengoList as $idx => $g) {
             if (!$g->equals($gengo)) {

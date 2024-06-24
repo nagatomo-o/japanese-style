@@ -1,0 +1,25 @@
+{
+    "name": "nagatomo-o/japanese-style",
+    "description": "Libraries for handling programming language expressions and Japanese expressions interchangeably",
+    "keywords": [
+        "japanese"
+    ],
+    "type": "library",
+    "version": "1.0.0",
+    "license": "Apache-2.0",
+    "autoload": {
+        "psr-4": {
+            "NagatomoO\\JapaneseStyle\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Shinichi Nagatomo",
+            "email": "nagatomo.o@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "php": ">=8.3",
+        "phpunit/phpunit": ">=11.0"
+    }
+}

@@ -1,14 +1,15 @@
 <?php declare(strict_types=1);
-namespace JapaneseStyle;
+namespace NagatomoO\JapaneseStyle;
 
 include "Gengo.php";
 include "Wareki.php";
 include "JapaneseNumeral.php";
 
-use JapaneseStyle\Gengo;
-use JapaneseStyle\Wareki;
-use JapaneseStyle\JapaneseNumeral;
+use NagatomoO\JapaneseStyle\Gengo;
+use NagatomoO\JapaneseStyle\Wareki;
+use NagatomoO\JapaneseStyle\JapaneseNumeral;
 use DateTimeInterface;
+use DateTimeImmutable;
 use DateTime;
 
 /**
@@ -51,7 +52,7 @@ class DateFields {
      * @return static インスタンス
      */
     static function now(): static {
-        return static::fromDate(new DateTime());
+        return static::fromDate(new DateTimeImmutable());
     }
 
     /**
@@ -75,16 +76,16 @@ class DateFields {
 
     /**
      * 日付に変換
-     * @return DateTime DateTimeインスタンス
+     * @return DateTimeImmutable DateTimeインスタンス
      */
-    function toDate(): DateTime {
+    function toDate(): DateTimeImmutable {
         $d = new DateTime();
         if ($this->gengo != null && $this->nen > 0) {
             $this->year = (new Wareki($this->gengo, $this->nen))->year;
         }
         $d->setDate($this->year, $this->month, $this->dayOfMonth);
         $d->setTime($this->hours, $this->minutes, $this->seconds, $this->milliseconds);
-        return $d;
+        return DateTimeImmutable::createFromMutable($d);
     }
 }
 /**

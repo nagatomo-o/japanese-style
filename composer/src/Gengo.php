@@ -1,13 +1,11 @@
 <?php declare(strict_types=1);
-namespace JapaneseStyle;
+namespace NagatomoO\JapaneseStyle;
 
+use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
-use JapaneseStyle\DateValueException;
-use Error;
-use DateTime;
-
+use NagatomoO\JapaneseStyle\DateValueException;
 
 /**
  * 元号
@@ -50,11 +48,11 @@ class Gengo {
 
     /**
      * 同値の判定
-     * @param Gengo other
+     * @param ?Gengo other
      * @return bool 同値
      */
-    function equals(Gengo $other): bool {
-        return $this === $other || null != $other && $this->name == $other->name && $this->since == $other->since;
+    function equals(?Gengo $other): bool {
+        return $this === $other || !is_null($other) && $this->name == $other->name && $this->since == $other->since;
     }
 
     /**
@@ -62,12 +60,12 @@ class Gengo {
      * @return static
      */
     static function now(): self {
-        return static::fromDate(new DateTime('now', new DateTimeZone('Asia/Tokyo')));
+        return self::fromDate(new DateTime('now', new DateTimeZone('Asia/Tokyo')));
     }
 
     /**
      * 日付から元号を取得
-     * @param DateTime $date 日付
+     * @param DateTimeInterface $date 日付
      * @return Gengo
      * @throws DateValueException $date is out of range
      */

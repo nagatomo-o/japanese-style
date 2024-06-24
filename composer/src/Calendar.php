@@ -1,18 +1,52 @@
 <?php declare(strict_types=1);
-namespace JapaneseStyle;
+namespace NagatomoO\JapaneseStyle;
 
+use DateTimeZone;
 use DateTimeInterface;
 use DateInterval;
-use DateTime;
+use DateTimeImmutable;
 
 class Calendar {
+    static function TimeZone(): DateTimeZone {
+        static $TZ;
+        return $TZ ?? $TZ = new DateTimeZone('Asia/Tokyo');
+    }
+
+    // 振替休日の施行日
+    static function ImplementationDateOfSubstituteHoliday(): DateTimeImmutable {
+        static $d;
+        return $d ?? $d = new DateTimeImmutable("1973-04-12 00:00:00.000000", self::TimeZone());
+    }
+    // 国民の休日の施行日
+    static function ImplementationDateOfAdditionalHoliday(): DateTimeImmutable {
+        static $d;
+        return $d ?? $d = new DateTimeImmutable("1985-12-27 00:00:00.000000", self::TimeZone());
+    }
+
+	/**
+	 * 春分の日
+	 * @param int $year 年
+	 * @return int 日
+	 */
+    static function getVernalEquinoxDay(int $year): int {
+        return (int) floor((0.242385544201545 * $year) - (floor($year / 4) - floor($year / 100) + floor($year / 400)) + 20.9150411785049);
+    }
+
+	/**
+	 * 秋分の日
+	 * @param int $year 年
+	 * @return int 日
+	 */
+    static function getAutumnalEquinoxDay(int $year): int {
+        return (int) floor((0.242035499172366 * $year) - (floor($year / 4) - floor($year / 100) + floor($year / 400)) + 24.0227494548387);
+    }
 
     static function getConstHoliday(DateTimeInterface $date): ?string {
-        $year = intval($date->format('y'));
+        $year = intval($date->format('Y'));
         $month = intval($date->format('n'));
         $dayOfMonth = intval($date->format('j'));
         $dayOfWeek = intval($date->format('w'));
-        $weekOfMonth = (int) floor(($dayOfMonth - 1) / 7);
+        $weekOfMonth = (int) floor(($dayOfMonth - 1) / 7) + 1;
 
         if ($year > 1948 && $month == 1 && $dayOfMonth == 1) {
             return '元日';
@@ -22,7 +56,7 @@ class Calendar {
             || $year >= 2000 && $month == 1 && $weekOfMonth == 2 && $dayOfWeek == 1) {
             return '成人の日';
 
-        } else if ($year > 1948 && $month == 2 && $dayOfMonth == (int) floor(20.69115 + 0.2421904 * ($year - 2000) - floor(($year - 2000) / 4))) {
+        } else if ($year > 1948 && $month == 3 && $dayOfMonth == self::getVernalEquinoxDay($year)) {
             return '春分の日';
 
         } else if ($year > 1948 && $month == 4 && $dayOfMonth == 29) {
@@ -40,7 +74,7 @@ class Calendar {
         } else if ($year > 1948 && $month == 5 && $dayOfMonth == 5) {
             return 'こどもの日';
 
-        } else if ($year >= 1948 && $month == 8 && $dayOfMonth == (int) floor(23.09 + 0.2421904 * ($year - 2000) - floor(($year - 2000) / 4))) {
+        } else if ($year >= 1948 && $month == 9 && $dayOfMonth == self::getAutumnalEquinoxDay($year)) {
             return '秋分の日';
 
         } else if ($year >= 1948 && $month == 11 && $dayOfMonth == 3) {
@@ -50,7 +84,8 @@ class Calendar {
             return '勤労感謝の日';
 
         } else if ($year == 1959 && $month == 4 && $dayOfMonth == 10) {
-            return '皇太子・明仁親王の結婚の儀';
+            // 皇太子・明仁親王の結婚の儀
+            return '結婚の儀';
 
         } else if ($year > 1966 && $month == 2 && $dayOfMonth == 11) {
             return '建国記念の日';
@@ -71,7 +106,8 @@ class Calendar {
             return $year >= 2020 ? 'スポーツの日' : '体育の日';
 
         } else if ($year == 1989 && $month == 2 && $dayOfMonth == 24) {
-            return '昭和天皇の大喪の礼';
+            // 昭和天皇の大喪の礼
+            return '大喪の礼';
 
         } else if ($year >= 1989 && $year < 2019 && $month == 12 && $dayOfMonth == 23) {
             return '天皇誕生日';
@@ -80,7 +116,8 @@ class Calendar {
             return '即位礼正殿の儀';
 
         } else if ($year == 1993 && $month == 6 && $dayOfMonth == 9) {
-            return '皇太子・徳仁親王の結婚の儀';
+            // 皇太子・徳仁親王の結婚の儀
+            return '結婚の儀';
 
         } else if ($year >= 1996 && $year < 2003 && $month == 7 && $dayOfMonth == 20
             // 2003年ハッピーマンデー制度により月曜日固定
@@ -127,32 +164,33 @@ class Calendar {
      * @return string holyday name
      */
     static function getHoliday(DateTimeInterface $date): ?string {
-        $year = intval($date->format('y'));
+        if (!($date instanceof DateTimeImmutable)) {
+            $date = DateTimeImmutable::createFromInterface($date);
+        }
         // 通常の祝日
         $constHoliday = self::getConstHoliday($date);
         if (!is_null($constHoliday)) {
             return $constHoliday;
         }
-        $yesterday = DateInterval::createFromDateString('yesterday');
-        $tomorrow = DateInterval::createFromDateString('tomorrow');
+        $aday = new DateInterval('P1D');
         // 振替休日
-        if ($year >= 1973) {
-            $testDate = DateTime::createFromInterface($date);
-            // 次の日
-            $testDate = $testDate->add($yesterday);
+        if ($date >= self::ImplementationDateOfSubstituteHoliday()) {
+            $testDate = DateTimeImmutable::createFromInterface($date);
+            // 前の日が祝日で日曜であれば振替休日
+            $testDate = $testDate->sub($aday);
             while (self::isConstHoliday($testDate)) {
                 // 日曜日の場合
-                if (intval($testDate->format('W')) == 0) {
+                if (intval($testDate->format('w')) == 0) {
                     return '振替休日';
                 }
-                $testDate = $testDate->add($yesterday);
+                $testDate = $testDate->sub($aday);
             }
         }
         // 国民の休日 : 前後が祝日である平日
-        if ($year >= 1986) {
-            if (self::isConstHoliday($date->add($yesterday)) &&
-                self::isConstHoliday($date->add($tomorrow)) &&
-                intval($date->format('W')) != 0) {
+        if ($date >= self::ImplementationDateOfAdditionalHoliday()) {
+            if (self::isConstHoliday($date->sub($aday)) &&
+                self::isConstHoliday($date->add($aday)) &&
+                intval($date->format('w')) != 0) {
                 return '国民の休日';
             }
         }
